@@ -4,16 +4,12 @@ import java.io.*;
 public class GameManager {
 	
 	public static void main (String[] args) throws FileNotFoundException {
-		
-      LeaderBoard board1 = new LeaderBoard("lb.txt");
+		LeaderBoard board1 = new LeaderBoard("lb.txt");
 		Scanner console = new Scanner(System.in);
-        
-		printIntro();
-		String user = console.next().toLowerCase();
-		if (!board1.containsUser(user)) board1.addUser(user);
-         System.out.println("Welcome " + user + "!");
-		System.out.println("type play, leaderboard, stats, or quit");
-		String reply = console.next().toLowerCase();
+		
+		String user = printIntro(board1);
+		String reply = promptUser();
+		
 		while (!reply.equals("quit")) {		
 			if (reply.equals("play")) {
 				runGame(board1, user, console);
@@ -24,16 +20,23 @@ public class GameManager {
 			} else {
 				System.out.println("I don't know what you typed.");
 				System.out.println("Try again.");
-				reply = console.next().toLowerCase();
 			}
-         System.out.println("type play, leaderboard, stats, or quit");
-         reply = console.next().toLowerCase();
+         		reply = promptUser();
 		}
 	}
 
-	public static void printIntro() {
+	public static String printIntro(LeaderBoard board) {
 		System.out.println("This is a game of Rock-Paper-Scissors.");
 		System.out.println("login with username");
+		String user = console.next().toLowerCase();
+		if (!board.containsUser(user)) board.addUser(user);
+		System.out.println("Welcome " + user + "!");
+		return user;
+	}
+	
+	public static String promptUser() {
+		System.out.println("type play, leaderboard, stats, or quit");
+         	return console.next().toLowerCase();
 	}
 	
 	public static void runGame(LeaderBoard board, String user, Scanner console) {
