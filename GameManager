@@ -1,0 +1,87 @@
+import java.util.*;
+import java.io.*;
+
+public class GameManager {
+	
+	public static void main (String[] args) throws FileNotFoundException {
+		LeaderBoard board1 = new LeaderBoard("lb.txt");
+		Scanner console = new Scanner(System.in);
+		
+		String user = printIntro(board1);
+		String reply = promptUser();
+		
+		while (!reply.equals("quit")) {		
+			if (reply.equals("play")) {
+				runGame(board1, user, console);
+			} else if (reply.equals("leaderboard")) {
+				runLeaderBoard(board1);
+			} else if (reply.equals("stats")) {
+				runStats(board1, user);
+			} else {
+				System.out.println("I don't know what you typed.");
+				System.out.println("Try again.");
+			}
+         		reply = promptUser();
+		}
+	}
+
+	public static String printIntro(LeaderBoard board) {
+		System.out.println("This is a game of Rock-Paper-Scissors.");
+		System.out.println("login with username");
+		String user = console.next().toLowerCase();
+		if (!board.containsUser(user)) board.addUser(user);
+		System.out.println("Welcome " + user + "!");
+		return user;
+	}
+	
+	public static String promptUser() {
+		System.out.println("type play, leaderboard, stats, or quit");
+         	return console.next().toLowerCase();
+	}
+	
+	public static void runGame(LeaderBoard board, String user, Scanner console) {
+      Random r = new Random();
+      boolean play = true;
+      while (play) {
+         int comp = r.nextInt(3);
+         System.out.println("Rock, paper or scissors?");
+         String answer = console.next().toLowerCase();
+         if ((answer.equals("rock")      && comp == 0) ||
+             (answer.equals("paper")     && comp == 1) ||
+             (answer.equals("scissors")  && comp == 2)) {
+            System.out.println("It's a Tie!");
+            board.get(user).addTie();
+         } else if ( (answer.equals("rock")      && comp == 1) ||
+                     (answer.equals("paper")     && comp == 2) ||
+                     (answer.equals("scissors")  && comp == 0)) {
+            System.out.println("You Lose!");
+            board.get(user).addLoss();
+            board.get(user).resetStreak();
+         } else if ( (answer.equals("rock")     && comp == 2) ||
+                     (answer.equals("paper")    && comp == 0) ||
+                     (answer.equals("scissors") && comp == 1)) {
+            System.out.println("You Win!");
+            board.get(user).addWin();
+            board.get(user).updateHighScore();
+         } else {
+            System.out.println("I don't know what you said");
+            play = false;
+         }
+      }
+	}
+	
+	public static void runLeaderBoard(LeaderBoard board) {
+        board.print();
+	}
+
+	public static void runStats(LeaderBoard board, String user) {
+        System.out.println("Username   : " + user);
+        System.out.println("High Score : " + board.get(user).getHighScore());
+        System.out.println("Wins       : " + board.get(user).getWin());
+        System.out.println("Losses     : " + board.get(user).getLoss());
+        System.out.println("Ties       : " + board.get(user).getTie());
+        System.out.println("Streak     : " + board.get(user).getStreak());
+        System.out.println("Score      : " + board.get(user).getScore());
+        System.out.println("Win Percent: " + board.get(user).getWinPercentage() + "%");  
+	}
+}
